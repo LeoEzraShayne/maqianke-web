@@ -64,25 +64,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   z-index: 20;
   backdrop-filter: blur(15px);
 }
-.brand { display: inline-flex; gap: 13px; align-items: center; }
-.brand-seal {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 60px;
-  padding-top: 2px;
-  color: var(--cinnabar);
-  border: 2px solid currentColor;
-  font-family: var(--serif);
-  font-size: 14px;
-  font-weight: 800;
-  line-height: .88;
-  text-align: center;
-  transform: rotate(-1.5deg);
-  box-shadow: inset 0 0 0 2px var(--paper-light), inset 0 0 0 3px currentColor;
-}
-.brand strong { display: block; font-family: var(--serif); font-size: 27px; letter-spacing: .08em; line-height: 1.05; }
-.brand small { display: block; color: var(--ink-soft); margin-top: 5px; letter-spacing: .28em; font-size: 11px; }
+.brand { display: inline-flex; align-items: center; flex: 0 0 auto; }
+.brand img { display: block; width: auto; height: 70px; mix-blend-mode: multiply; }
 .header-actions, .header-actions nav { display: flex; align-items: center; }
 .header-actions { gap: 26px; }
 .header-actions nav { gap: 24px; }
@@ -90,14 +73,16 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .header-actions nav a::after { content: ""; position: absolute; left: 50%; right: 50%; bottom: 1px; height: 1px; background: var(--cinnabar); transition: .2s ease; }
 .header-actions nav a:hover, .header-actions nav a.active { color: var(--ink); }
 .header-actions nav a:hover::after, .header-actions nav a.active::after { left: 4px; right: 4px; }
-.google-login { display: inline-flex; align-items: center; gap: 9px; min-height: 42px; padding: 0 15px; border: 1px solid var(--line-dark); background: rgba(255,255,255,.55); font-size: 13px; transition: .2s ease; }
-.google-login:hover { border-color: var(--ink-soft); background: #fff; transform: translateY(-1px); }
+.google-login, .wechat-login, .account-link { display: inline-flex; align-items: center; gap: 9px; min-height: 42px; padding: 0 13px; border: 1px solid var(--line-dark); background: rgba(255,255,255,.55); font-size: 13px; transition: .2s ease; }
+.google-login:hover, .wechat-login:hover, .account-link:hover { border-color: var(--ink-soft); background: #fff; transform: translateY(-1px); }
+.google-login[hidden], .wechat-login[hidden], .account-link[hidden] { display: none; }
 .auth-actions { display: flex; align-items: center; gap: 8px; }
-.google-login.signed-in { background: rgba(150,54,45,.06); border-color: rgba(150,54,45,.45); }
-.google-login.signed-in .google-mark { color: var(--paper-light); background: var(--cinnabar); border-color: var(--cinnabar); }
+.account-link.signed-in { background: rgba(150,54,45,.06); border-color: rgba(150,54,45,.45); }
+.account-link.signed-in .account-mark { color: var(--paper-light); background: var(--cinnabar); border-color: var(--cinnabar); }
 .logout-button { border: 0; padding: 8px 4px; color: var(--ink-soft); background: transparent; cursor: pointer; font-size: 11px; }
 .logout-button:hover { color: var(--cinnabar); }
-.google-mark { display: grid; place-items: center; width: 23px; height: 23px; border: 1px solid var(--line); border-radius: 50%; font-weight: 700; font-family: Arial, sans-serif; }
+.google-mark, .wechat-mark, .account-mark { display: grid; place-items: center; width: 23px; height: 23px; border: 1px solid var(--line); border-radius: 50%; font-weight: 700; font-family: Arial, sans-serif; }
+.wechat-mark { color: #fff; border-color: #2f9b51; background: #2f9b51; font: 700 12px/1 var(--serif); }
 .nav-toggle { display: none; border: 0; background: transparent; color: var(--ink); }
 
 .hero-panel {
@@ -116,7 +101,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .hero-copy h1 em { color: var(--cinnabar); font-style: normal; }
 .hero-copy > p:last-child { max-width: 465px; margin: 22px 0 0; color: var(--ink-soft); font-family: var(--serif); font-size: 17px; line-height: 1.8; }
 .ink-landscape { position: absolute; z-index: 1; inset: 0; background: linear-gradient(90deg, var(--paper-light) 0%, rgba(250,246,237,.93) 24%, rgba(250,246,237,.24) 61%, rgba(250,246,237,0) 100%), url('/images/ink-landscape.png') center right / cover no-repeat; opacity: .82; filter: sepia(.12) saturate(.72) contrast(.9); }
-.hero-stamp { position: absolute; z-index: 4; right: 50px; bottom: 42px; width: 58px; height: 64px; display: grid; place-items: center; color: var(--cinnabar); border: 2px solid currentColor; font: 700 18px/1.1 var(--serif); text-align: center; transform: rotate(3deg); opacity: .75; }
 
 .measure-layout { display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(310px, .72fr); border: 1px solid rgba(172,155,127,.6); border-top: 0; background: rgba(250,246,237,.82); box-shadow: var(--shadow); }
 .form-scroll { padding: 44px 48px 50px; border-right: 1px solid var(--line); }
@@ -223,14 +207,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 @media (max-width: 900px) {
   .site-shell { width: min(100% - 28px, 720px); margin-top: 14px; }
   .site-header { height: 78px; padding: 0 18px; top: 8px; }
-  .brand strong { font-size: 23px; }
-  .brand-seal { width: 39px; height: 54px; font-size: 12px; }
+  .brand img { height: 60px; }
   .nav-toggle { display: block; padding: 10px; cursor: pointer; }
   .header-actions { display: none; position: absolute; top: calc(100% + 7px); left: 0; right: 0; padding: 20px; align-items: stretch; background: var(--paper-light); border: 1px solid var(--line-dark); box-shadow: var(--shadow); }
   .header-actions.is-open { display: grid; }
   .header-actions nav { display: grid; gap: 0; }
   .header-actions nav a { padding: 13px 4px; border-bottom: 1px solid var(--line); }
-  .google-login { justify-content: center; }
+  .google-login, .wechat-login, .account-link { justify-content: center; }
   .auth-actions { display: grid; }
   .hero-panel { min-height: 400px; }
   .hero-copy { padding: 55px 36px; max-width: 510px; }
@@ -246,7 +229,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 @media (max-width: 620px) {
   .site-shell { width: 100%; margin: 0; }
   .site-header { top: 0; border-inline: 0; }
-  .brand small { letter-spacing: .18em; }
+  .brand img { height: 55px; }
   .hero-panel::before { inset: 12px; }
   .hero-panel { min-height: 430px; border-inline: 0; }
   .hero-copy { padding: 56px 26px; }
@@ -254,7 +237,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   .eyebrow span + span::before { margin-right: 8px; }
   .hero-copy h1, .page-banner h1 { font-size: 43px; }
   .hero-copy > p:last-child { font-size: 15px; max-width: 290px; }
-  .hero-stamp { right: 28px; bottom: 30px; }
   .measure-layout, .ledger-section, .about-article, .source-note, .legal-page { border-inline: 0; }
   .form-scroll { padding: 34px 20px 38px; }
   .section-heading { align-items: flex-start; }

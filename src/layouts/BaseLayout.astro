@@ -10,6 +10,7 @@ interface Props {
 const { title, description, current } = Astro.props;
 const apiBase = import.meta.env.PUBLIC_API_BASE_URL ?? 'https://maqianke-api.meritledger.org';
 const googleLoginUrl = `${apiBase}/auth/google`;
+const wechatLoginUrl = `${apiBase}/auth/wechat`;
 const ogUrl = new URL('/og.png', Astro.url.origin).toString();
 ---
 
@@ -34,11 +35,7 @@ const ogUrl = new URL('/og.png', Astro.url.origin).toString();
     <div class="site-shell">
       <header class="site-header">
         <a class="brand" href="/" aria-label="马前课首页">
-          <span class="brand-seal" aria-hidden="true">马<br />前<br />课</span>
-          <span>
-            <strong>马前课</strong>
-            <small>决策之王</small>
-          </span>
+          <img src="/images/maqianke-logo.png" width="600" height="288" alt="马前课，决策之王" />
         </a>
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">菜单</button>
         <div class="header-actions" id="site-nav">
@@ -49,8 +46,16 @@ const ogUrl = new URL('/og.png', Astro.url.origin).toString();
           </nav>
           <div class="auth-actions">
             <a class="google-login" id="google-login" href={googleLoginUrl}>
-              <span class="google-mark" id="auth-mark" aria-hidden="true">G</span>
-              <span id="auth-label">使用 Google 登录</span>
+              <span class="google-mark" aria-hidden="true">G</span>
+              <span>Google 登录</span>
+            </a>
+            <a class="wechat-login" id="wechat-login" href={wechatLoginUrl} hidden>
+              <span class="wechat-mark" aria-hidden="true">微</span>
+              <span>微信登录</span>
+            </a>
+            <a class="account-link signed-in" id="account-link" href="/history" hidden>
+              <span class="account-mark" id="auth-mark" aria-hidden="true">我</span>
+              <span id="auth-label">我的课簿</span>
             </a>
             <button class="logout-button" id="logout-button" type="button" hidden>退出</button>
           </div>
@@ -74,19 +79,34 @@ const ogUrl = new URL('/og.png', Astro.url.origin).toString();
         nav?.classList.toggle('is-open', !open);
       });
 
-      const loginLink = document.querySelector('#google-login');
+      const googleLoginLink = document.querySelector('#google-login');
+      const wechatLoginLink = document.querySelector('#wechat-login');
+      const accountLink = document.querySelector('#account-link');
       const authLabel = document.querySelector('#auth-label');
       const authMark = document.querySelector('#auth-mark');
       const logoutButton = document.querySelector('#logout-button');
+      async function loadProviders() {
+        try {
+          const response = await fetch(`${apiBase}/api/auth/providers`, { credentials: 'include' });
+          if (!response.ok) return;
+          const providers = await response.json();
+          googleLoginLink.hidden = !providers.google;
+          wechatLoginLink.hidden = !providers.wechat;
+        } catch {
+          // Keep the known Google login fallback visible when provider discovery is unavailable.
+        }
+      }
       async function loadCurrentUser() {
+        await loadProviders();
         try {
           const response = await fetch(`${apiBase}/api/me`, { credentials: 'include' });
           if (!response.ok) return null;
           const { user } = await response.json();
           authLabel.textContent = user.name || user.email;
           authMark.textContent = (user.name || user.email || '我').trim().slice(0, 1);
-          loginLink.href = '/history';
-          loginLink.classList.add('signed-in');
+          googleLoginLink.hidden = true;
+          wechatLoginLink.hidden = true;
+          accountLink.hidden = false;
           logoutButton.hidden = false;
           document.documentElement.dataset.authenticated = 'true';
           window.dispatchEvent(new CustomEvent('maqianke:auth', { detail: user }));
