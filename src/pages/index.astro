@@ -177,7 +177,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       message.hidden = true;
       try {
         const user = await window.maqiankeAuth.userPromise;
-        if (!user) throw new Error('请先使用 Google 登录，再开始测算。');
+        if (!user) throw new Error('请先登录或注册，再开始测算。');
         const [birth, queryTimeData] = await Promise.all([
           convertTime('birth', birthDate.value, birthTime.value),
           convertTime('query', queryDate.value, queryTime.value),
