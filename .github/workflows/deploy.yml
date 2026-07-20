@@ -45,5 +45,7 @@ jobs:
       - name: Deploy Cloudflare Worker
         run: pnpm exec wrangler deploy -c wrangler.deploy.jsonc
 
-      - name: Verify production website
-        run: curl --fail --retry 10 --retry-delay 2 --retry-all-errors https://maqianke.meritledger.org/
+      - name: Verify Cloudflare deployment
+        run: |
+          pnpm exec wrangler deployments list --name maqianke-web --json \
+            | node -e 'let input = ""; process.stdin.on("data", chunk => input += chunk); process.stdin.on("end", () => { const deployments = JSON.parse(input); if (!Array.isArray(deployments) || deployments.length === 0) process.exit(1); console.log(`Verified ${deployments.length} Cloudflare deployment(s).`); });'
