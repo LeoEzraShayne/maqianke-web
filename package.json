@@ -1,0 +1,23 @@
+{
+  "name": "maqianke-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.9.0",
+  "engines": { "node": ">=24 <27" },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "wrangler dev -c wrangler.deploy.jsonc",
+    "deploy": "pnpm build && wrangler deploy -c wrangler.deploy.jsonc"
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "13.7.0",
+    "astro": "6.4.8"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.6",
+    "typescript": "^5.9.3",
+    "wrangler": "^4.71.0"
+  }
+}

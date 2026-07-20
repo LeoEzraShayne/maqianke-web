@@ -1,0 +1,77 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="历史记录｜马前课" description="查看自己的测算问题、结果并记录是否准确。" current="history">
+  <section class="page-banner compact-banner">
+    <p class="eyebrow">课后复盘 · 心中有数</p>
+    <h1>历史记录</h1>
+    <p>选择“准确”或“不准确”后，准确率会自动更新。</p>
+  </section>
+  <section class="ledger-section">
+    <div class="ledger-title-row">
+      <div><span class="chapter-no">录</span><h2>我的课簿</h2></div>
+      <p>准确率 <strong id="accuracy-rate">—</strong><small id="accuracy-count"></small></p>
+    </div>
+    <div class="ledger-table" id="ledger-table" aria-live="polite"></div>
+  </section>
+  <script is:inline>
+    let records = [];
+    const table = document.querySelector('#ledger-table');
+    function render() {
+      const rated = records.filter((item) => item.accuracy !== null);
+      const correct = rated.filter((item) => item.accuracy === true).length;
+      document.querySelector('#accuracy-rate').textContent = rated.length ? `${Math.round(correct / rated.length * 100)}%` : '—';
+      document.querySelector('#accuracy-count').textContent = rated.length ? `（${correct} / ${rated.length}）` : '（尚未评价）';
+      table.innerHTML = records.length ? `
+        <div class="ledger-row ledger-head"><span>问的问题</span><span>测算结果</span><span>是否准确</span></div>
+        ${records.map((item) => `
+          <div class="ledger-row">
+            <p>${escapeHtml(item.question)}</p>
+            <strong>${escapeHtml(item.result)}</strong>
+            <fieldset><legend class="sr-only">这次测得准吗？</legend>
+              <label><input type="radio" name="accuracy-${item.id}" value="true" ${item.accuracy === true ? 'checked' : ''}/>准确</label>
+              <label><input type="radio" name="accuracy-${item.id}" value="false" ${item.accuracy === false ? 'checked' : ''}/>不准确</label>
+            </fieldset>
+          </div>`).join('')}` : `<div class="empty-ledger"><span>无</span><h3>还没有测算记录</h3><p>完成一次测算后，记录会显示在这里。</p><a href="/">返回测算</a></div>`;
+    }
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char]);
+    }
+    table.addEventListener('change', async (event) => {
+      const input = event.target.closest('input[type="radio"]');
+      if (!input) return;
+      const id = input.name.replace('accuracy-', '');
+      input.disabled = true;
+      try {
+        const response = await fetch(`${window.maqiankeAuth.apiBase}/api/history/${encodeURIComponent(id)}/accuracy`, {
+          method: 'PATCH',
+          credentials: 'include',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ accuracy: input.value === 'true' }),
+        });
+        if (!response.ok) throw new Error('保存失败');
+        records = records.map((item) => item.id === id ? { ...item, accuracy: input.value === 'true' } : item);
+        render();
+      } catch {
+        input.checked = false;
+        input.disabled = false;
+      }
+    });
+    async function loadHistory() {
+      table.innerHTML = '<div class="empty-ledger"><span>候</span><h3>正在读取课簿</h3></div>';
+      const response = await fetch(`${window.maqiankeAuth.apiBase}/api/history`, { credentials: 'include' });
+      if (response.status === 401) {
+        table.innerHTML = '<div class="empty-ledger"><span>锁</span><h3>登录后查看自己的课簿</h3><p>历史记录只对当前 Google 用户可见。</p><a href="https://maqianke-api.meritledger.org/auth/google">使用 Google 登录</a></div>';
+        return;
+      }
+      if (!response.ok) {
+        table.innerHTML = '<div class="empty-ledger"><span>缓</span><h3>课簿暂时无法读取</h3><p>请稍后刷新页面。</p></div>';
+        return;
+      }
+      records = (await response.json()).records;
+      render();
+    }
+    window.addEventListener('DOMContentLoaded', loadHistory, { once: true });
+  </script>
+</BaseLayout>

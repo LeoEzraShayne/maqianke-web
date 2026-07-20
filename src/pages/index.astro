@@ -1,0 +1,213 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="马前课｜决策之王" description="一次只问一件事，以时间起课，获得清晰的趋势参考。" current="measure">
+  <section class="hero-panel">
+    <div class="hero-copy">
+      <p class="eyebrow"><span>一事一问</span><span>以时起课</span><span>观其趋势</span></p>
+      <h1>心有所问，<br /><em>课有所应</em></h1>
+      <p>把纷繁之事，化作一个清晰的问题。填写时间，静候一课。</p>
+    </div>
+    <div class="ink-landscape" aria-hidden="true"></div>
+    <div class="hero-stamp" aria-hidden="true">一<br />课</div>
+  </section>
+
+  <section class="measure-layout" aria-label="马前课测算表单">
+    <div class="form-scroll">
+      <div class="section-heading">
+        <div><span class="chapter-no">壹</span><h2>你想问什么？</h2></div>
+        <span class="section-note">一次只问一件事</span>
+      </div>
+      <label class="question-field">
+        <span class="sr-only">要测算的问题</span>
+        <textarea id="question" maxlength="120" placeholder="请用一个清晰、单一的问题描述你要测算的事情。一次只能问一件事。例如：我能不能上大学？"></textarea>
+      </label>
+      <p class="field-error" id="question-error" role="alert"></p>
+
+      <div class="section-heading time-heading">
+        <div><span class="chapter-no">贰</span><h2>起课时间</h2></div>
+        <span class="section-note">请选择阳历或阴历</span>
+      </div>
+
+      <div class="time-grid">
+        <fieldset class="time-card" data-time-card="birth">
+          <legend><span class="time-icon" aria-hidden="true">生</span>我的出生时间</legend>
+          <div class="calendar-switch" role="group" aria-label="出生时间历法">
+            <button type="button" class="selected" data-calendar="solar">阳历</button>
+            <button type="button" data-calendar="lunar">阴历</button>
+          </div>
+          <div class="date-time-row">
+            <label><span>日期</span><input id="birth-date" type="date" /></label>
+            <label><span>具体时间</span><input id="birth-time" type="time" /></label>
+          </div>
+          <label class="leap-month" hidden><input id="birth-leap" type="checkbox" />这是闰月</label>
+          <p class="field-error" id="birth-error" role="alert"></p>
+        </fieldset>
+
+        <fieldset class="time-card" data-time-card="query">
+          <legend><span class="time-icon" aria-hidden="true">问</span>当前问事时间</legend>
+          <div class="card-tools">
+            <div class="calendar-switch" role="group" aria-label="问事时间历法">
+              <button type="button" class="selected" data-calendar="solar">阳历</button>
+              <button type="button" data-calendar="lunar">阴历</button>
+            </div>
+            <button class="now-button" type="button" id="use-now">使用当前时间</button>
+          </div>
+          <div class="date-time-row">
+            <label><span>日期</span><input id="query-date" type="date" /></label>
+            <label><span>具体时间</span><input id="query-time" type="time" /></label>
+          </div>
+          <label class="leap-month" hidden><input id="query-leap" type="checkbox" />这是闰月</label>
+          <p class="field-error" id="query-error" role="alert"></p>
+        </fieldset>
+      </div>
+
+      <button class="measure-button" id="measure-button" type="button">
+        <span aria-hidden="true">起</span>
+        <strong>开始测算</strong>
+        <small>静心 · 一事 · 一问</small>
+      </button>
+    </div>
+
+    <aside class="result-scroll" id="result-panel" aria-live="polite">
+      <div class="result-heading">
+        <span class="chapter-no">叁</span>
+        <div><p>本课判词</p><h2>测算结果</h2></div>
+      </div>
+      <div class="result-empty" id="result-empty">
+        <span class="empty-symbol" aria-hidden="true">○</span>
+        <p>问题与时间填写完整后，<br />结果将在此处展开。</p>
+      </div>
+      <div class="result-content" id="result-content" hidden>
+        <div class="verdict-seal" id="verdict-seal">待</div>
+        <p class="verdict-kicker">此事之势</p>
+        <h2 id="verdict-title">尚待时机</h2>
+        <p id="verdict-copy">眼下条件尚未齐备，宜守静观察，待关键条件出现再作决定。</p>
+        <dl>
+          <div><dt>所问之事</dt><dd id="result-question"></dd></div>
+          <div><dt>起课时间</dt><dd id="result-time"></dd></div>
+        </dl>
+        <p class="result-disclaimer">测算结果仅供个人参考，不构成任何专业建议。</p>
+      </div>
+      <div class="result-message" id="result-message" hidden></div>
+    </aside>
+  </section>
+
+  <section class="principles" aria-label="使用原则">
+    <article><span>一</span><h3>一事一问</h3><p>问题越清晰，所得趋势越容易理解。</p></article>
+    <article><span>时</span><h3>以时起课</h3><p>记录真实时间，为后续阴历转换保留依据。</p></article>
+    <article><span>省</span><h3>事后复盘</h3><p>在历史记录中标注准确与否，查看准确率。</p></article>
+  </section>
+
+  <script is:inline>
+    const pad = (value) => String(value).padStart(2, '0');
+    const question = document.querySelector('#question');
+    const birthDate = document.querySelector('#birth-date');
+    const birthTime = document.querySelector('#birth-time');
+    const queryDate = document.querySelector('#query-date');
+    const queryTime = document.querySelector('#query-time');
+
+    function fillNow() {
+      const now = new Date();
+      queryDate.value = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+      queryTime.value = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+    }
+    fillNow();
+    document.querySelector('#use-now')?.addEventListener('click', fillNow);
+
+    const calendarSelection = { birth: 'solar', query: 'solar' };
+    document.querySelectorAll('.calendar-switch').forEach((switcher) => {
+      switcher.addEventListener('click', (event) => {
+        const target = event.target.closest('button[data-calendar]');
+        if (!target) return;
+        switcher.querySelectorAll('button').forEach((button) => button.classList.remove('selected'));
+        target.classList.add('selected');
+        const card = switcher.closest('[data-time-card]');
+        const kind = card?.dataset.timeCard;
+        if (!kind) return;
+        calendarSelection[kind] = target.dataset.calendar;
+        const dateInput = card.querySelector('input[type="date"], input[data-lunar-date]');
+        const leapLabel = card.querySelector('.leap-month');
+        if (target.dataset.calendar === 'lunar') {
+          dateInput.type = 'text';
+          dateInput.dataset.lunarDate = 'true';
+          dateInput.placeholder = 'YYYY-MM-DD（阴历）';
+          dateInput.inputMode = 'numeric';
+          leapLabel.hidden = false;
+        } else {
+          dateInput.type = 'date';
+          delete dateInput.dataset.lunarDate;
+          dateInput.placeholder = '';
+          dateInput.removeAttribute('inputmode');
+          leapLabel.hidden = true;
+          leapLabel.querySelector('input').checked = false;
+        }
+      });
+    });
+
+    async function convertTime(kind, date, time) {
+      const response = await fetch(`${window.maqiankeAuth.apiBase}/api/calendar/convert`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          calendar: calendarSelection[kind],
+          date,
+          time,
+          isLeapMonth: document.querySelector(`#${kind}-leap`).checked,
+        }),
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error?.message || '日期转换失败');
+      return payload;
+    }
+
+    document.querySelector('#measure-button')?.addEventListener('click', async () => {
+      const text = question.value.trim();
+      const multiIssue = /并且|同时|以及|还要|又要/.test(text) || (text.match(/[？?]/g) || []).length > 1;
+      document.querySelector('#question-error').textContent = !text
+        ? '请输入一件要问的事。'
+        : multiIssue ? '这个问题看起来包含两件事，请拆成一个问题。' : '';
+      document.querySelector('#birth-error').textContent = birthDate.value && birthTime.value ? '' : '请填写完整的出生日期和时间。';
+      document.querySelector('#query-error').textContent = queryDate.value && queryTime.value ? '' : '请填写完整的问事日期和时间。';
+      if (!text || multiIssue || !birthDate.value || !birthTime.value || !queryDate.value || !queryTime.value) return;
+      const button = document.querySelector('#measure-button');
+      const message = document.querySelector('#result-message');
+      button.disabled = true;
+      message.hidden = true;
+      try {
+        const user = await window.maqiankeAuth.userPromise;
+        if (!user) throw new Error('请先使用 Google 登录，再开始测算。');
+        const [birth, queryTimeData] = await Promise.all([
+          convertTime('birth', birthDate.value, birthTime.value),
+          convertTime('query', queryDate.value, queryTime.value),
+        ]);
+        const response = await fetch(`${window.maqiankeAuth.apiBase}/api/divinations`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ question: text, birth, query: queryTimeData }),
+        });
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error?.message || '测算暂时不可用');
+        const record = payload.record;
+        document.querySelector('#verdict-title').textContent = record.result;
+        document.querySelector('#verdict-copy').textContent = record.explanation;
+        document.querySelector('#verdict-seal').textContent = record.result.slice(0, 1);
+        document.querySelector('#result-question').textContent = record.question;
+        document.querySelector('#result-time').textContent = record.calculatedAt;
+        document.querySelector('#result-empty').hidden = true;
+        document.querySelector('#result-content').hidden = false;
+      } catch (error) {
+        document.querySelector('#result-empty').hidden = true;
+        document.querySelector('#result-content').hidden = true;
+        message.textContent = error.message || '测算暂时不可用';
+        message.hidden = false;
+      } finally {
+        button.disabled = false;
+        document.querySelector('#result-panel').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    });
+  </script>
+</BaseLayout>
