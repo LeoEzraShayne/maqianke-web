@@ -232,9 +232,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .auth-form input:not([type="checkbox"]) { width: 100%; height: 50px; padding: 0 14px; border: 1px solid var(--line-dark); border-radius: 0; color: var(--ink); background: rgba(255,255,255,.7); }
 .auth-form input:not([type="checkbox"]):focus { border-color: var(--cinnabar); background: #fffdf9; }
 .password-field { display: grid !important; grid-template-columns: 1fr auto; margin: 0 !important; border: 1px solid var(--line-dark); background: rgba(255,255,255,.7); }
-.password-field:focus-within { border-color: var(--cinnabar); background: #fffdf9; }
+.password-field:focus-within { border-color: var(--cinnabar); outline: 3px solid rgba(150,54,45,.25); outline-offset: 3px; background: #fffdf9; }
 .password-field input { border: 0 !important; background: transparent !important; }
 .password-field button { min-width: 62px; border: 0; color: var(--cinnabar); background: transparent; cursor: pointer; font-size: 12px; }
+.password-field input:focus-visible, .password-field button:focus-visible { outline: 0; }
 .terms-check { display: flex; align-items: flex-start; gap: 9px; margin-top: 20px; color: var(--ink-soft); font-size: 12px; line-height: 1.6; }
 .terms-check input { width: 17px; height: 17px; margin: 1px 0 0; accent-color: var(--cinnabar); }
 .terms-check a { margin-inline: 3px; color: var(--cinnabar); border-bottom: 1px solid currentColor; }
