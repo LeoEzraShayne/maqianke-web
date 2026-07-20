@@ -1,0 +1,200 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const apiBase = import.meta.env.PUBLIC_API_BASE_URL ?? 'https://maqianke-api.meritledger.org';
+const googleLoginUrl = `${apiBase}/auth/google`;
+---
+
+<BaseLayout title="登录与注册｜马前课" description="使用中文用户名和密码登录马前课。">
+  <section class="auth-layout">
+    <aside class="auth-intro">
+      <p class="eyebrow">一人一簿 · 所问自知</p>
+      <h1>入课</h1>
+      <p>使用容易记住的中文用户名登录。你的问题、测算结果和准确率只会记在自己的课簿中。</p>
+      <div class="auth-intro-note"><span>安</span><p><strong>无需邮箱或手机号</strong><br />用户名和密码由马前课直接管理。</p></div>
+    </aside>
+
+    <article class="auth-card">
+      <div class="auth-tabs" role="tablist" aria-label="账户操作">
+        <button type="button" role="tab" aria-selected="true" data-auth-mode="login">登录</button>
+        <button type="button" role="tab" aria-selected="false" data-auth-mode="register">注册</button>
+        <button type="button" role="tab" aria-selected="false" data-auth-mode="reset">忘记密码</button>
+      </div>
+
+      <form class="auth-form" id="login-form" data-auth-panel="login">
+        <div class="auth-heading"><span>入</span><div><h2>登录课簿</h2><p>输入用户名和密码继续。</p></div></div>
+        <label><span>用户名</span><input name="username" autocomplete="username" maxlength="20" required placeholder="例如：妈妈" /></label>
+        <label><span>密码</span><span class="password-field"><input name="password" type="password" autocomplete="current-password" maxlength="128" required /><button type="button" data-password-toggle>显示</button></span></label>
+        <p class="auth-error" role="alert"></p>
+        <button class="auth-submit" type="submit">登录</button>
+      </form>
+
+      <form class="auth-form" id="register-form" data-auth-panel="register" hidden>
+        <div class="auth-heading"><span>启</span><div><h2>新建课簿</h2><p>用户名可以使用中文，密码至少8个字符。</p></div></div>
+        <label><span>用户名</span><input name="username" autocomplete="username" maxlength="20" required placeholder="2—20个中文、字母或数字" /></label>
+        <label><span>设置密码</span><span class="password-field"><input name="password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required /><button type="button" data-password-toggle>显示</button></span></label>
+        <label><span>确认密码</span><span class="password-field"><input name="confirmPassword" type="password" autocomplete="new-password" minlength="8" maxlength="128" required /><button type="button" data-password-toggle>显示</button></span></label>
+        <label class="terms-check"><input name="acceptTerms" type="checkbox" required /><span>我已阅读并同意<a href="/terms" target="_blank">用户协议</a>和<a href="/privacy" target="_blank">隐私政策</a></span></label>
+        <p class="auth-error" role="alert"></p>
+        <button class="auth-submit" type="submit">注册并登录</button>
+      </form>
+
+      <form class="auth-form" id="reset-form" data-auth-panel="reset" hidden>
+        <div class="auth-heading"><span>复</span><div><h2>重设密码</h2><p>使用注册或上次重置时保存的恢复码。</p></div></div>
+        <label><span>用户名</span><input name="username" autocomplete="username" maxlength="20" required /></label>
+        <label><span>恢复码</span><input name="recoveryCode" autocomplete="off" maxlength="64" required placeholder="MQK-XXXX-XXXX-XXXX-XXXX" /></label>
+        <label><span>新密码</span><span class="password-field"><input name="newPassword" type="password" autocomplete="new-password" minlength="8" maxlength="128" required /><button type="button" data-password-toggle>显示</button></span></label>
+        <label><span>确认新密码</span><span class="password-field"><input name="confirmPassword" type="password" autocomplete="new-password" minlength="8" maxlength="128" required /><button type="button" data-password-toggle>显示</button></span></label>
+        <p class="auth-error" role="alert"></p>
+        <button class="auth-submit" type="submit">重设密码并登录</button>
+      </form>
+
+      <section class="recovery-card" id="recovery-card" aria-live="polite" hidden>
+        <span class="recovery-seal" aria-hidden="true">存</span>
+        <h2 id="recovery-title">请保存恢复码</h2>
+        <p>忘记密码时，这是找回原课簿的唯一凭据。请复制、拍照或交给可信任的家人保管。</p>
+        <code id="recovery-code"></code>
+        <button type="button" class="copy-recovery" id="copy-recovery">复制恢复码</button>
+        <label class="terms-check recovery-confirm"><input id="recovery-saved" type="checkbox" /><span>我已经保存好恢复码</span></label>
+        <a class="auth-submit disabled" id="recovery-continue" href="/" aria-disabled="true">继续使用马前课</a>
+      </section>
+
+      <div class="oauth-divider"><span>其他登录方式</span></div>
+      <a class="google-login auth-google" id="page-google-login" href={googleLoginUrl}>
+        <span class="google-mark" aria-hidden="true">G</span><span>使用 Google 登录</span>
+      </a>
+    </article>
+  </section>
+
+  <script is:inline define:vars={{ apiBase }}>
+    const params = new URL(window.location.href).searchParams;
+    const requestedReturn = params.get('returnTo') || '/';
+    const returnTo = requestedReturn.startsWith('/') && !requestedReturn.startsWith('//') ? requestedReturn : '/';
+    const tabs = [...document.querySelectorAll('[data-auth-mode]')];
+    const panels = [...document.querySelectorAll('[data-auth-panel]')];
+    const recoveryCard = document.querySelector('#recovery-card');
+    const oauthDivider = document.querySelector('.oauth-divider');
+    const googleLogin = document.querySelector('#page-google-login');
+
+    function setMode(mode) {
+      recoveryCard.hidden = true;
+      tabs.forEach((tab) => tab.setAttribute('aria-selected', String(tab.dataset.authMode === mode)));
+      panels.forEach((panel) => { panel.hidden = panel.dataset.authPanel !== mode; });
+      document.querySelector(`[data-auth-panel="${mode}"] input`)?.focus();
+    }
+    tabs.forEach((tab) => tab.addEventListener('click', () => setMode(tab.dataset.authMode)));
+    setMode(['login', 'register', 'reset'].includes(params.get('mode')) ? params.get('mode') : 'login');
+
+    document.querySelectorAll('[data-password-toggle]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const input = button.previousElementSibling;
+        const visible = input.type === 'text';
+        input.type = visible ? 'password' : 'text';
+        button.textContent = visible ? '显示' : '隐藏';
+      });
+    });
+
+    async function post(path, body, form) {
+      const errorNode = form.querySelector('.auth-error');
+      const submit = form.querySelector('[type="submit"]');
+      errorNode.textContent = '';
+      submit.disabled = true;
+      try {
+        const response = await fetch(`${apiBase}${path}`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error?.message || '操作失败，请稍后再试');
+        return payload;
+      } catch (error) {
+        errorNode.textContent = error.message || '操作失败，请稍后再试';
+        return null;
+      } finally {
+        submit.disabled = false;
+      }
+    }
+
+    document.querySelector('#login-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const data = new FormData(form);
+      const payload = await post('/api/auth/local/login', { username: data.get('username'), password: data.get('password') }, form);
+      if (payload) window.location.assign(returnTo);
+    });
+
+    document.querySelector('#register-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const data = new FormData(form);
+      if (data.get('password') !== data.get('confirmPassword')) {
+        form.querySelector('.auth-error').textContent = '两次输入的密码不一致';
+        return;
+      }
+      const payload = await post('/api/auth/local/register', {
+        username: data.get('username'),
+        password: data.get('password'),
+        acceptTerms: data.get('acceptTerms') === 'on',
+      }, form);
+      if (payload) showRecovery(payload.recoveryCode, '注册成功，请保存恢复码');
+    });
+
+    document.querySelector('#reset-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const data = new FormData(form);
+      if (data.get('newPassword') !== data.get('confirmPassword')) {
+        form.querySelector('.auth-error').textContent = '两次输入的新密码不一致';
+        return;
+      }
+      const payload = await post('/api/auth/local/reset-password', {
+        username: data.get('username'),
+        recoveryCode: data.get('recoveryCode'),
+        newPassword: data.get('newPassword'),
+      }, form);
+      if (payload) showRecovery(payload.recoveryCode, '密码已重设，请保存新恢复码');
+    });
+
+    function showRecovery(code, title) {
+      tabs.forEach((tab) => { tab.hidden = true; });
+      panels.forEach((panel) => { panel.hidden = true; });
+      oauthDivider.hidden = true;
+      googleLogin.hidden = true;
+      document.querySelector('#recovery-title').textContent = title;
+      document.querySelector('#recovery-code').textContent = code;
+      recoveryCard.hidden = false;
+      recoveryCard.focus?.();
+    }
+
+    document.querySelector('#copy-recovery').addEventListener('click', async (event) => {
+      const button = event.currentTarget;
+      try {
+        await navigator.clipboard.writeText(document.querySelector('#recovery-code').textContent);
+        button.textContent = '已复制';
+      } catch {
+        button.textContent = '请长按恢复码复制';
+      }
+    });
+
+    document.querySelector('#recovery-saved').addEventListener('change', (event) => {
+      const link = document.querySelector('#recovery-continue');
+      link.classList.toggle('disabled', !event.currentTarget.checked);
+      link.setAttribute('aria-disabled', String(!event.currentTarget.checked));
+      link.href = event.currentTarget.checked ? returnTo : '/';
+    });
+    document.querySelector('#recovery-continue').addEventListener('click', (event) => {
+      if (event.currentTarget.getAttribute('aria-disabled') === 'true') event.preventDefault();
+    });
+
+    fetch(`${apiBase}/api/auth/providers`, { credentials: 'include' }).then((response) => response.json()).then((providers) => {
+      googleLogin.hidden = !providers.google;
+      oauthDivider.hidden = !providers.google;
+    }).catch(() => {});
+
+    window.maqiankeAuth.userPromise.then((user) => {
+      if (user) window.location.replace('/history');
+    });
+  </script>
+</BaseLayout>

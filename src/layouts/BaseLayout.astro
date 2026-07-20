@@ -9,8 +9,8 @@ interface Props {
 
 const { title, description, current } = Astro.props;
 const apiBase = import.meta.env.PUBLIC_API_BASE_URL ?? 'https://maqianke-api.meritledger.org';
-const googleLoginUrl = `${apiBase}/auth/google`;
-const wechatLoginUrl = `${apiBase}/auth/wechat`;
+const returnTo = `${Astro.url.pathname}${Astro.url.search}`;
+const loginUrl = `/login?returnTo=${encodeURIComponent(returnTo)}`;
 const ogUrl = new URL('/og.png', Astro.url.origin).toString();
 ---
 
@@ -45,13 +45,9 @@ const ogUrl = new URL('/og.png', Astro.url.origin).toString();
             <a class:list={{ active: current === 'about' }} href="/about">关于</a>
           </nav>
           <div class="auth-actions">
-            <a class="google-login" id="google-login" href={googleLoginUrl}>
-              <span class="google-mark" aria-hidden="true">G</span>
-              <span>Google 登录</span>
-            </a>
-            <a class="wechat-login" id="wechat-login" href={wechatLoginUrl} hidden>
-              <span class="wechat-mark" aria-hidden="true">微</span>
-              <span>微信登录</span>
+            <a class="local-login" id="local-login" href={loginUrl}>
+              <span class="account-mark" aria-hidden="true">入</span>
+              <span>登录 / 注册</span>
             </a>
             <a class="account-link signed-in" id="account-link" href="/history" hidden>
               <span class="account-mark" id="auth-mark" aria-hidden="true">我</span>
@@ -79,33 +75,19 @@ const ogUrl = new URL('/og.png', Astro.url.origin).toString();
         nav?.classList.toggle('is-open', !open);
       });
 
-      const googleLoginLink = document.querySelector('#google-login');
-      const wechatLoginLink = document.querySelector('#wechat-login');
+      const loginLink = document.querySelector('#local-login');
       const accountLink = document.querySelector('#account-link');
       const authLabel = document.querySelector('#auth-label');
       const authMark = document.querySelector('#auth-mark');
       const logoutButton = document.querySelector('#logout-button');
-      async function loadProviders() {
-        try {
-          const response = await fetch(`${apiBase}/api/auth/providers`, { credentials: 'include' });
-          if (!response.ok) return;
-          const providers = await response.json();
-          googleLoginLink.hidden = !providers.google;
-          wechatLoginLink.hidden = !providers.wechat;
-        } catch {
-          // Keep the known Google login fallback visible when provider discovery is unavailable.
-        }
-      }
       async function loadCurrentUser() {
-        await loadProviders();
         try {
           const response = await fetch(`${apiBase}/api/me`, { credentials: 'include' });
           if (!response.ok) return null;
           const { user } = await response.json();
           authLabel.textContent = user.name || user.email;
           authMark.textContent = (user.name || user.email || '我').trim().slice(0, 1);
-          googleLoginLink.hidden = true;
-          wechatLoginLink.hidden = true;
+          loginLink.hidden = true;
           accountLink.hidden = false;
           logoutButton.hidden = false;
           document.documentElement.dataset.authenticated = 'true';
