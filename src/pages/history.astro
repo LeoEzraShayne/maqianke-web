@@ -24,11 +24,15 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       document.querySelector('#accuracy-rate').textContent = rated.length ? `${Math.round(correct / rated.length * 100)}%` : '—';
       document.querySelector('#accuracy-count').textContent = rated.length ? `（${correct} / ${rated.length}）` : '（尚未评价）';
       table.innerHTML = records.length ? `
-        <div class="ledger-row ledger-head"><span>问的问题</span><span>测算结果</span><span>是否准确</span></div>
+        <div class="ledger-row ledger-head"><span>问的问题</span><span>算事儿时间</span><span>测算结果</span><span>是否准确</span></div>
         ${records.map((item) => `
           <div class="ledger-row">
             <p>${escapeHtml(item.question)}</p>
-            <strong>${escapeHtml(item.result)}</strong>
+            <time class="ledger-time" datetime="${escapeHtml(item.querySolar)}">${escapeHtml(formatQueryTime(item.querySolar))}</time>
+            <strong class="ledger-result" tabindex="0">
+              ${escapeHtml(item.result)}
+              <span class="result-tooltip" role="tooltip"><b>${escapeHtml(item.result)}</b>${escapeHtml(item.explanation)}</span>
+            </strong>
             <fieldset><legend class="sr-only">这次测得准吗？</legend>
               <label><input type="radio" name="accuracy-${item.id}" value="true" ${item.accuracy === true ? 'checked' : ''}/>准确</label>
               <label><input type="radio" name="accuracy-${item.id}" value="false" ${item.accuracy === false ? 'checked' : ''}/>不准确</label>
@@ -37,6 +41,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     }
     function escapeHtml(value) {
       return String(value).replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char]);
+    }
+    function formatQueryTime(value) {
+      return String(value || '').replace('T', ' ').slice(0, 16) || '—';
     }
     table.addEventListener('change', async (event) => {
       const input = event.target.closest('input[type="radio"]');
@@ -62,7 +69,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       table.innerHTML = '<div class="empty-ledger"><span>候</span><h3>正在读取课簿</h3></div>';
       const response = await fetch(`${window.maqiankeAuth.apiBase}/api/history`, { credentials: 'include' });
       if (response.status === 401) {
-        table.innerHTML = '<div class="empty-ledger"><span>锁</span><h3>登录后查看自己的课簿</h3><p>历史记录只对当前 Google 用户可见。</p><a href="https://maqianke-api.meritledger.org/auth/google">使用 Google 登录</a></div>';
+        table.innerHTML = '<div class="empty-ledger"><span>锁</span><h3>登录后查看自己的课簿</h3><p>历史记录只对当前登录用户可见。</p><a href="/">返回首页登录</a></div>';
         return;
       }
       if (!response.ok) {
