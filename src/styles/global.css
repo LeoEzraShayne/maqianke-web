@@ -50,6 +50,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 
 .site-shell { width: min(1180px, calc(100% - 48px)); margin: 28px auto 52px; position: relative; }
 .site-header {
+  --sticky-offset: 12px;
   height: 92px;
   display: flex;
   align-items: center;
@@ -60,10 +61,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   border-bottom: 3px double var(--line);
   box-shadow: 0 9px 35px rgba(59,44,24,.08);
   position: sticky;
-  top: 12px;
+  top: var(--sticky-offset);
   z-index: 20;
   backdrop-filter: blur(15px);
 }
+.site-header::before { content: ""; position: absolute; left: -1px; right: -1px; top: calc(0px - var(--sticky-offset) - 1px); height: calc(var(--sticky-offset) + 1px); background: linear-gradient(180deg, rgba(241,234,220,.98), rgba(250,246,237,.98)); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); pointer-events: none; }
 .brand { display: inline-flex; align-items: center; flex: 0 0 auto; }
 .brand img { display: block; width: auto; height: 70px; mix-blend-mode: multiply; }
 .header-actions, .header-actions nav { display: flex; align-items: center; }
@@ -259,7 +261,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 
 @media (max-width: 900px) {
   .site-shell { width: min(100% - 28px, 720px); margin-top: 14px; }
-  .site-header { height: 78px; padding: 0 18px; top: 8px; }
+  .site-header { --sticky-offset: 8px; height: 78px; padding: 0 18px; }
   .brand img { height: 60px; }
   .nav-toggle { display: block; padding: 10px; cursor: pointer; }
   .header-actions { display: none; position: absolute; top: calc(100% + 7px); left: 0; right: 0; padding: 20px; align-items: stretch; background: var(--paper-light); border: 1px solid var(--line-dark); box-shadow: var(--shadow); }
@@ -286,7 +288,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 
 @media (max-width: 620px) {
   .site-shell { width: 100%; margin: 0; }
-  .site-header { top: 0; border-inline: 0; }
+  .site-header { --sticky-offset: 0px; border-inline: 0; }
+  .site-header::before { display: none; }
   .brand img { height: 55px; }
   .hero-panel::before { inset: 12px; }
   .hero-panel { min-height: 430px; border-inline: 0; }
