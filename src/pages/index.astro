@@ -101,6 +101,22 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
   <script is:inline>
     const pad = (value) => String(value).padStart(2, '0');
+    const normalizeDateValue = (value) => {
+      const normalized = String(value || '').normalize('NFKC').trim();
+      const match = normalized.match(/^(\d{4})\s*[-/.年]\s*(\d{1,2})\s*[-/.月]\s*(\d{1,2})\s*日?$/);
+      return match ? `${match[1]}-${pad(match[2])}-${pad(match[3])}` : '';
+    };
+    const normalizeTimeValue = (value) => {
+      const normalized = String(value || '').normalize('NFKC').trim();
+      const match = normalized.match(/^(\d{1,2})(?::|时)(\d{1,2})(?::\d{1,2})?分?$/);
+      return match ? `${pad(match[1])}:${pad(match[2])}` : '';
+    };
+    const timeInputError = (label, rawDate, date, rawTime, time) => {
+      if (!rawDate || !rawTime) return `请填写完整的${label}日期和时间。`;
+      if (!date) return '日期格式不正确，请重新选择日期。';
+      if (!time) return '时间格式不正确，请重新选择时间。';
+      return '';
+    };
     const question = document.querySelector('#question');
     const birthDate = document.querySelector('#birth-date');
     const birthTime = document.querySelector('#birth-time');
@@ -158,19 +174,29 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         }),
       });
       const payload = await response.json();
-      if (!response.ok) throw new Error(payload.error?.message || '日期转换失败');
+      if (!response.ok) {
+        const conversionError = new Error(payload.error?.message || '日期转换失败');
+        conversionError.timeKind = kind;
+        throw conversionError;
+      }
       return payload;
     }
 
     document.querySelector('#measure-button')?.addEventListener('click', async () => {
       const text = question.value.trim();
+      const birthDateValue = normalizeDateValue(birthDate.value);
+      const birthTimeValue = normalizeTimeValue(birthTime.value);
+      const queryDateValue = normalizeDateValue(queryDate.value);
+      const queryTimeValue = normalizeTimeValue(queryTime.value);
       const multiIssue = /并且|同时|以及|还要|又要/.test(text) || (text.match(/[？?]/g) || []).length > 1;
       document.querySelector('#question-error').textContent = !text
         ? '请输入一件要问的事。'
         : multiIssue ? '这个问题看起来包含两件事，请拆成一个问题。' : '';
-      document.querySelector('#birth-error').textContent = birthDate.value && birthTime.value ? '' : '请填写完整的出生日期和时间。';
-      document.querySelector('#query-error').textContent = queryDate.value && queryTime.value ? '' : '请填写完整的问事日期和时间。';
-      if (!text || multiIssue || !birthDate.value || !birthTime.value || !queryDate.value || !queryTime.value) return;
+      const birthError = timeInputError('出生', birthDate.value, birthDateValue, birthTime.value, birthTimeValue);
+      const queryError = timeInputError('问事', queryDate.value, queryDateValue, queryTime.value, queryTimeValue);
+      document.querySelector('#birth-error').textContent = birthError;
+      document.querySelector('#query-error').textContent = queryError;
+      if (!text || multiIssue || birthError || queryError) return;
       const button = document.querySelector('#measure-button');
       const message = document.querySelector('#result-message');
       button.disabled = true;
@@ -179,8 +205,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         const user = await window.maqiankeAuth.userPromise;
         if (!user) throw new Error('请先登录或注册，再开始测算。');
         const [birth, queryTimeData] = await Promise.all([
-          convertTime('birth', birthDate.value, birthTime.value),
-          convertTime('query', queryDate.value, queryTime.value),
+          convertTime('birth', birthDateValue, birthTimeValue),
+          convertTime('query', queryDateValue, queryTimeValue),
         ]);
         const response = await fetch(`${window.maqiankeAuth.apiBase}/api/divinations`, {
           method: 'POST',
@@ -201,7 +227,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       } catch (error) {
         document.querySelector('#result-empty').hidden = true;
         document.querySelector('#result-content').hidden = true;
-        message.textContent = error.message || '测算暂时不可用';
+        if (error.timeKind) {
+          document.querySelector(`#${error.timeKind}-error`).textContent = error.message || '日期转换失败，请重新选择日期和时间。';
+        }
+        message.textContent = error.timeKind ? '请检查填写的日期和时间。' : (error.message || '测算暂时不可用');
         message.hidden = false;
       } finally {
         button.disabled = false;
