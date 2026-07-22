@@ -11,9 +11,6 @@ importers:
       '@astrojs/cloudflare':
         specifier: 13.7.0
         version: 13.7.0(astro@6.4.8(rollup@4.62.2)(yaml@2.9.0))(wrangler@4.112.0)(yaml@2.9.0)
-      '@fontsource/zcool-xiaowei':
-        specifier: 5.3.0
-        version: 5.3.0
       astro:
         specifier: 6.4.8
         version: 6.4.8(rollup@4.62.2)(yaml@2.9.0)
@@ -498,9 +495,6 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
-
-  '@fontsource/zcool-xiaowei@5.3.0':
-    resolution: {integrity: sha512-iRuUPl9ONFbYzi6JcEshpE4VedINyzQ4hv0Z5XEt0cB0pMPiQeqc2Qvv1NwJCNzkPwG02VCdcO+cF2K8ylYn2A==}
 
   '@img/colour@1.1.0':
     resolution: {integrity: sha512-Td76q7j57o/tLVdgS746cYARfSyxk8iEfRxewL9h4OMzYhbW4TAcppl0mT4eyqXddh6L/jwoM75mo7ixa/pCeQ==}
@@ -2443,8 +2437,6 @@ snapshots:
 
   '@esbuild/win32-x64@0.28.1':
     optional: true
-
-  '@fontsource/zcool-xiaowei@5.3.0': {}
 
   '@img/colour@1.1.0': {}
 
