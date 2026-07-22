@@ -1,3 +1,6 @@
+@import "lxgw-wenkai-webfont/lxgwwenkai-regular.css";
+@import "lxgw-wenkai-webfont/lxgwwenkai-bold.css";
+
 @font-face {
   font-family: "Local Song";
   src: local("Songti SC"), local("STSong"), local("Noto Serif CJK SC");
@@ -16,7 +19,7 @@
   --cinnabar-dark: #742820;
   --gold: #aa8b58;
   --shadow: 0 22px 70px rgba(60, 45, 25, .10);
-  --serif: "Local Song", "Songti SC", STSong, serif;
+  --serif: "LXGW WenKai", "Local Song", "Songti SC", STSong, serif;
   --sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
 }
 
