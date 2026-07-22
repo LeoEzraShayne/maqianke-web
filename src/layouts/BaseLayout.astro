@@ -106,14 +106,15 @@ const websiteSchema = Astro.url.pathname === '/' ? {
         try {
           const response = await fetch(`${apiBase}/api/me`, { credentials: 'include' });
           if (!response.ok) return null;
-          const { user } = await response.json();
+          const { user, birthProfile } = await response.json();
           authLabel.textContent = user.name || user.email;
           authMark.textContent = (user.name || user.email || '我').trim().slice(0, 1);
           loginLink.hidden = true;
           accountLink.hidden = false;
           logoutButton.hidden = false;
           document.documentElement.dataset.authenticated = 'true';
-          window.dispatchEvent(new CustomEvent('maqianke:auth', { detail: user }));
+          window.maqiankeAuth.birthProfile = birthProfile;
+          window.dispatchEvent(new CustomEvent('maqianke:auth', { detail: { user, birthProfile } }));
           return user;
         } catch {
           return null;

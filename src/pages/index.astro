@@ -51,7 +51,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
               <button type="button" class="selected" data-calendar="solar">阳历</button>
               <button type="button" data-calendar="lunar">阴历</button>
             </div>
-            <button class="now-button" type="button" id="use-now">使用当前时间</button>
+            <button class="now-button" type="button" id="use-now" aria-pressed="true">当前时间 · 实时</button>
           </div>
           <div class="date-time-row">
             <label><span>日期</span><input id="query-date" type="date" /></label>
@@ -122,6 +122,15 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     const birthTime = document.querySelector('#birth-time');
     const queryDate = document.querySelector('#query-date');
     const queryTime = document.querySelector('#query-time');
+    const nowButton = document.querySelector('#use-now');
+    const calendarSelection = { birth: 'solar', query: 'solar' };
+    let queryClockLive = true;
+
+    function setQueryClockLive(live) {
+      queryClockLive = live;
+      nowButton.textContent = live ? '当前时间 · 实时' : '使用当前时间';
+      nowButton.setAttribute('aria-pressed', String(live));
+    }
 
     function fillNow() {
       const now = new Date();
@@ -129,9 +138,21 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       queryTime.value = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
     }
     fillNow();
-    document.querySelector('#use-now')?.addEventListener('click', fillNow);
+    const clockTimer = window.setInterval(() => {
+      if (queryClockLive && document.visibilityState === 'visible') fillNow();
+    }, 1000);
+    window.addEventListener('pagehide', () => window.clearInterval(clockTimer), { once: true });
+    document.addEventListener('visibilitychange', () => {
+      if (queryClockLive && document.visibilityState === 'visible') fillNow();
+    });
+    [queryDate, queryTime].forEach((input) => input.addEventListener('input', () => setQueryClockLive(false)));
+    nowButton?.addEventListener('click', () => {
+      const solarButton = document.querySelector('[data-time-card="query"] button[data-calendar="solar"]');
+      if (!solarButton.classList.contains('selected')) solarButton.click();
+      setQueryClockLive(true);
+      fillNow();
+    });
 
-    const calendarSelection = { birth: 'solar', query: 'solar' };
     document.querySelectorAll('.calendar-switch').forEach((switcher) => {
       switcher.addEventListener('click', (event) => {
         const target = event.target.closest('button[data-calendar]');
@@ -142,6 +163,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         const kind = card?.dataset.timeCard;
         if (!kind) return;
         calendarSelection[kind] = target.dataset.calendar;
+        if (kind === 'query') setQueryClockLive(false);
         const dateInput = card.querySelector('input[type="date"], input[data-lunar-date]');
         const leapLabel = card.querySelector('.leap-month');
         if (target.dataset.calendar === 'lunar') {
@@ -160,6 +182,16 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         }
       });
     });
+
+    function applyBirthProfile(profile) {
+      if (!profile || birthDate.value || birthTime.value) return;
+      const calendarButton = document.querySelector(`[data-time-card="birth"] button[data-calendar="${profile.calendar}"]`);
+      calendarButton?.click();
+      birthDate.value = profile.date;
+      birthTime.value = profile.time;
+      document.querySelector('#birth-leap').checked = Boolean(profile.isLeapMonth);
+    }
+    window.addEventListener('maqianke:auth', (event) => applyBirthProfile(event.detail?.birthProfile));
 
     async function convertTime(kind, date, time) {
       const response = await fetch(`${window.maqiankeAuth.apiBase}/api/calendar/convert`, {
