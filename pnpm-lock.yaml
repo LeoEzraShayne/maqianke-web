@@ -11,12 +11,12 @@ importers:
       '@astrojs/cloudflare':
         specifier: 13.7.0
         version: 13.7.0(astro@6.4.8(rollup@4.62.2)(yaml@2.9.0))(wrangler@4.112.0)(yaml@2.9.0)
+      '@fontsource/zcool-xiaowei':
+        specifier: 5.3.0
+        version: 5.3.0
       astro:
         specifier: 6.4.8
         version: 6.4.8(rollup@4.62.2)(yaml@2.9.0)
-      lxgw-wenkai-webfont:
-        specifier: 1.7.0
-        version: 1.7.0
     devDependencies:
       '@astrojs/check':
         specifier: ^0.9.6
@@ -498,6 +498,9 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
+
+  '@fontsource/zcool-xiaowei@5.3.0':
+    resolution: {integrity: sha512-iRuUPl9ONFbYzi6JcEshpE4VedINyzQ4hv0Z5XEt0cB0pMPiQeqc2Qvv1NwJCNzkPwG02VCdcO+cF2K8ylYn2A==}
 
   '@img/colour@1.1.0':
     resolution: {integrity: sha512-Td76q7j57o/tLVdgS746cYARfSyxk8iEfRxewL9h4OMzYhbW4TAcppl0mT4eyqXddh6L/jwoM75mo7ixa/pCeQ==}
@@ -1290,9 +1293,6 @@ packages:
   lru-cache@11.5.2:
     resolution: {integrity: sha512-4pfM1Ff0x50o0tQwb5ucw/RzNyD0/YJME6IVcStalZuMWxdt3sR3huStTtxz4PUmvZfRguvDejasvQ2kifR11g==}
     engines: {node: 20 || >=22}
-
-  lxgw-wenkai-webfont@1.7.0:
-    resolution: {integrity: sha512-kVJmT4xMAyOLhG6q0w63wJkVU7RP8UMQRGoAWj9tnpzL7sWFFYiEHBdUQyW9myqBQFa5SQfWfa2VLYF4IJBL5g==}
 
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
@@ -2444,6 +2444,8 @@ snapshots:
   '@esbuild/win32-x64@0.28.1':
     optional: true
 
+  '@fontsource/zcool-xiaowei@5.3.0': {}
+
   '@img/colour@1.1.0': {}
 
   '@img/sharp-darwin-arm64@0.34.5':
@@ -3271,8 +3273,6 @@ snapshots:
   longest-streak@3.1.0: {}
 
   lru-cache@11.5.2: {}
-
-  lxgw-wenkai-webfont@1.7.0: {}
 
   magic-string@0.30.21:
     dependencies:

@@ -1,5 +1,4 @@
-@import "lxgw-wenkai-webfont/lxgwwenkai-regular.css";
-@import "lxgw-wenkai-webfont/lxgwwenkai-bold.css";
+@import "@fontsource/zcool-xiaowei";
 
 @font-face {
   font-family: "Local Song";
@@ -19,7 +18,8 @@
   --cinnabar-dark: #742820;
   --gold: #aa8b58;
   --shadow: 0 22px 70px rgba(60, 45, 25, .10);
-  --serif: "LXGW WenKai", "Local Song", "Songti SC", STSong, serif;
+  --display: "ZCOOL XiaoWei", "Local Song", "Songti SC", STSong, serif;
+  --serif: "Local Song", "Songti SC", STSong, "Noto Serif CJK SC", serif;
   --sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
 }
 
@@ -93,7 +93,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .hero-copy { position: relative; z-index: 3; padding: 68px 48px 62px; max-width: 580px; }
 .eyebrow { display: flex; gap: 18px; color: var(--cinnabar); font-family: var(--serif); letter-spacing: .16em; font-size: 13px; margin: 0 0 18px; }
 .eyebrow span + span::before { content: "·"; margin-right: 18px; color: var(--gold); }
-.hero-copy h1, .page-banner h1 { margin: 0; font: 700 clamp(44px, 5vw, 68px)/1.18 var(--serif); letter-spacing: .04em; }
+.hero-copy h1, .page-banner h1 { margin: 0; font: 400 clamp(44px, 5vw, 68px)/1.18 var(--display); letter-spacing: .04em; font-synthesis: none; }
 .hero-copy h1 em { color: var(--cinnabar); font-style: normal; }
 .hero-copy > p:last-child { max-width: 465px; margin: 22px 0 0; color: var(--ink-soft); font-family: var(--serif); font-size: 17px; line-height: 1.8; }
 .ink-landscape { position: absolute; z-index: 1; inset: 0; background: linear-gradient(90deg, var(--paper-light) 0%, rgba(250,246,237,.93) 24%, rgba(250,246,237,.24) 61%, rgba(250,246,237,0) 100%), url('/images/ink-landscape.png') center right / cover no-repeat; opacity: .82; filter: sepia(.12) saturate(.72) contrast(.9); }
@@ -145,9 +145,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .result-empty p { font-family: var(--serif); line-height: 1.9; }
 .result-content { position: relative; z-index: 1; padding: 28px 0 0; }
 .preview-label { display: inline-block; margin: 0 0 20px; padding: 4px 8px; border: 1px solid var(--line-dark); color: var(--ink-soft); font-size: 10px; letter-spacing: .12em; }
-.verdict-seal { float: right; display: grid; place-items: center; width: 54px; height: 54px; color: var(--cinnabar); border: 3px double currentColor; font: 700 24px/1 var(--serif); transform: rotate(4deg); }
+.verdict-seal { float: right; display: grid; place-items: center; width: 54px; height: 54px; color: var(--cinnabar); border: 3px double currentColor; font: 400 24px/1 var(--display); transform: rotate(4deg); font-synthesis: none; }
 .verdict-kicker { margin: 7px 0 5px; color: var(--ink-soft); font-size: 12px; }
-.result-content h2 { margin: 0 0 16px; color: var(--cinnabar); font: 700 38px/1.2 var(--serif); }
+.result-content h2 { margin: 0 0 16px; color: var(--cinnabar); font: 400 38px/1.2 var(--display); font-synthesis: none; }
 .result-content > p:not(.preview-label):not(.verdict-kicker):not(.result-disclaimer) { font-family: var(--serif); line-height: 1.9; }
 .result-content dl { margin: 26px 0 0; border-top: 1px solid var(--line); }
 .result-content dl > div { padding: 13px 0; border-bottom: 1px solid var(--line); }
@@ -201,14 +201,14 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .source-note { margin-top: 18px; padding: 30px 56px; box-shadow: none; border-top: 1px solid rgba(172,155,127,.55); }
 .source-note p { font-size: 13px; color: var(--ink-soft); }
 .legal-page { padding: 65px 70px 80px; }
-.legal-page > h1 { margin: 0 0 8px; font: 700 48px/1.2 var(--serif); }
+.legal-page > h1 { margin: 0 0 8px; font: 400 48px/1.2 var(--display); font-synthesis: none; }
 .legal-updated { margin-bottom: 42px !important; color: var(--ink-soft) !important; font-size: 13px !important; }
 .legal-page h2 { margin-top: 33px; padding-top: 24px; border-top: 1px solid var(--line); }
 
 .auth-layout { display: grid; grid-template-columns: minmax(300px, .75fr) minmax(460px, 1.25fr); min-height: 680px; border: 1px solid rgba(172,155,127,.58); border-top: 0; background: rgba(250,246,237,.86); box-shadow: var(--shadow); }
 .auth-intro { position: relative; overflow: hidden; padding: 78px 50px; border-right: 1px solid var(--line); background: linear-gradient(180deg, rgba(250,246,237,.9), rgba(226,213,191,.58)); }
 .auth-intro::after { content: ""; position: absolute; inset: auto -180px -30px -100px; height: 330px; background: url('/images/ink-landscape.png') center bottom / cover no-repeat; opacity: .2; filter: grayscale(1); pointer-events: none; }
-.auth-intro h1 { position: relative; z-index: 1; margin: 0 0 24px; color: var(--cinnabar); font: 700 68px/1 var(--serif); }
+.auth-intro h1 { position: relative; z-index: 1; margin: 0 0 24px; color: var(--cinnabar); font: 400 68px/1 var(--display); font-synthesis: none; }
 .auth-intro > p:not(.eyebrow) { position: relative; z-index: 1; margin: 0; color: var(--ink-soft); font: 17px/2 var(--serif); }
 .auth-intro-note { position: relative; z-index: 1; display: grid; grid-template-columns: 42px 1fr; gap: 14px; margin-top: 45px; padding-top: 26px; border-top: 1px solid var(--line-dark); }
 .auth-intro-note > span { display: grid; place-items: center; width: 40px; height: 40px; color: var(--cinnabar); border: 2px solid currentColor; font: 700 18px/1 var(--serif); transform: rotate(-2deg); }
