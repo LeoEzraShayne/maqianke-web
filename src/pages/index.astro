@@ -51,7 +51,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
               <button type="button" class="selected" data-calendar="solar">阳历</button>
               <button type="button" data-calendar="lunar">阴历</button>
             </div>
-            <button class="now-button" type="button" id="use-now" aria-pressed="true">当前时间 · 实时</button>
+            <button class="now-button" type="button" id="use-now" aria-pressed="true">使用当前时间</button>
           </div>
           <div class="date-time-row">
             <label><span>日期</span><input id="query-date" type="date" /></label>
@@ -128,7 +128,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
     function setQueryClockLive(live) {
       queryClockLive = live;
-      nowButton.textContent = live ? '当前时间 · 实时' : '使用当前时间';
       nowButton.setAttribute('aria-pressed', String(live));
     }
 
