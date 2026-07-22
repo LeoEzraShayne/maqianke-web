@@ -103,6 +103,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .section-heading h2, .ledger-title-row h2 { margin: 0; font: 700 24px/1.2 var(--serif); letter-spacing: .04em; }
 .chapter-no { display: grid; place-items: center; width: 30px; height: 30px; border: 1px solid var(--cinnabar); color: var(--cinnabar); font: 700 15px/1 var(--serif); transform: rotate(-2deg); }
 .section-note { color: var(--ink-soft); font-size: 12px; letter-spacing: .08em; }
+.time-heading .section-note { max-width: none; white-space: nowrap; }
 .question-field textarea { display: block; width: 100%; min-height: 122px; padding: 20px 22px; resize: vertical; color: var(--ink); background: rgba(255,255,255,.62); border: 1px solid var(--line-dark); border-radius: 2px; line-height: 1.75; transition: .2s ease; }
 .question-field textarea::placeholder { color: #8b8479; }
 .question-field textarea:focus, .date-time-row input:focus { border-color: var(--cinnabar); background: #fffdf9; }
